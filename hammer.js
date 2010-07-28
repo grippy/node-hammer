@@ -152,7 +152,7 @@ function done(){
     sys.puts('------------')
     sys.puts('Total requests: ' + requests.length)
     sys.print('Average response time: ') 
-    sys.puts(total / requests.length)
+    sys.puts(total / requests.length + ' (ms)')
     sys.puts('Requests per second: ' + (rps_count / rps_total))
     sys.puts('Errors: ' + errors.length)
     sys.puts('------------')

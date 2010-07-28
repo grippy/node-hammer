@@ -1,14 +1,16 @@
 Use this lib to issue requests against the some url. You can define the number of simultaneous clients and how many requests they'll issue. You wanna submit form variables with your requests? No, problem.
 
+## Node Compatibility
+
+This library was tested with node v0.1.101.
+
 ## Hammer Time!
 
 See help: 
 
 	$ node hammer.js --help 
 
-This command fires up 5 clients and issues 10K requests per client.
-	
-Run command: 
+This command fires up 5 clients and issues 10K requests per client:
 
 	$ node hammer.js GET http://localhost:8000/ 5 10000
 
@@ -22,6 +24,8 @@ Example from test.js:
 Run command: 
 
 	$ node hammer.js POST http://localhost:8000/ 5 10000 --form=./form/test.js
+	
+This file is required so make sure you use ./
 
 ## Simple Report
 When the process finishes, you'll see a report like this:
