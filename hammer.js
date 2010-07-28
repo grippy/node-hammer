@@ -61,7 +61,7 @@ if (form_file){
 
 var proxy = http.createClient(uri.port, uri.hostname);
 var requests = []
-var errors = []
+var errors = 0
 var procs = {}
 var completed = {}
 
@@ -88,33 +88,38 @@ function request(method, path, proc_name, total){
         // sys.puts(sys.inspect(proxy_req))
         proxy_req.end();
         proxy_req.on('response', function (proxy_res) {
-        
-            proxy_res.on('data', function (chunk) {
-                    proxy_req.end_at = new Date();
-                    var stat = {'request': proc_name + ':' + procs[proc_name], 'start_at': proxy_req.start_at, 'end_at': proxy_req.end_at}
-                    requests.push(stat)
-                    procs[proc_name] += 1
+            if (proxy_res.statusCode < 400){
+                proxy_res.on('data', function (chunk) {
+                        proxy_req.end_at = new Date();
+                        var stat = {'request': proc_name + ':' + procs[proc_name], 'start_at': proxy_req.start_at, 'end_at': proxy_req.end_at}
+                        requests.push(stat)
+                        procs[proc_name] += 1
 
-                    // sys.puts(sys.inspect(stat))
-                    if (procs[proc_name] < total) {
-                        // sys.puts(proc_name + ':' + procs[proc_name])
-                        sys.print('.')
-                        try{
-                            request(method, path, proc_name, total)
-                        } catch(e){
-                            errors.push('error')
+                        // sys.puts(sys.inspect(stat))
+                        if (procs[proc_name] < total) {
+                            // sys.puts(proc_name + ':' + procs[proc_name])
+                            sys.print('.')
+                            try{
+                                request(method, path, proc_name, total)
+                            } catch(e){
+                                errors += 1
+                                request(method, path, proc_name, total)
+                            }
+                        } else {
+                            completed[proc_name] = true
                         }
-                    } else {
-                        completed[proc_name] = true
-                    }
-            });
-            proxy_res.on('end', function (){
-
-            });
+                });
+                proxy_res.on('end', function(){});
+                
+            } else {
+                errors += 1
+                request(method, path, proc_name, total)
+            }
 
         });
     } catch(e){
-        errors.push('error')
+        errors += 1
+        request(method, path, proc_name, total)
     }
 }
 function done(){
@@ -154,7 +159,7 @@ function done(){
     sys.print('Average response time: ') 
     sys.puts(total / requests.length + ' (ms)')
     sys.puts('Requests per second: ' + (rps_count / rps_total))
-    sys.puts('Errors: ' + errors.length)
+    sys.puts('Errors: ' + errors)
     sys.puts('------------')
     
     return
