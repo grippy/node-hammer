@@ -174,7 +174,7 @@ var request_path = uri.pathname
 if (uri.search) {
     request_path += uri.search
 }
-if (request_method=='GET') {
+if (request_method=='GET' && form.length > 0) {
     if(request_path.indexOf('?') > -1) {
         request_path += '&' + form
     } else {
